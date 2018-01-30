@@ -1,0 +1,2 @@
+# blog_system
+使用python语言及django框架从零实现一个博客系统,用于替换现有的wordpress.
