@@ -1,20 +1,15 @@
 from django.db import models
 
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
 # Create your models here.
 
-
-# 用户元数据(UserMeta)模型
-class UserMeta(models.Model):
-    username_validator = UnicodeUsernameValidator()
-
+# 用户(User)模型
+# 采用的继承方式扩展用户信息
+class User(AbstractUser):
+    # 在继承的基础上新增字段
     nicename = models.CharField(
         "昵称", max_length=32, unique=True,
-        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-        validators=[username_validator],
-    )
+        help_text='Required. 32 characters or fewer. Letters, digits and @/./+/-/_ only.')
     avatar = models.ImageField("头像", upload_to='avatar/%Y/%m', default='avatar/default.png',
                                max_length=200, blank=True, null=True)
     mobile = models.CharField("手机号码", max_length=11, blank=True, null=True, unique=True)
@@ -26,34 +21,14 @@ class UserMeta(models.Model):
 
     # 使用内部的class Meta 定义模型的元数据
     class Meta:
-        # verbose_name：数据库表名名称，这里表名称为“用户”
-        verbose_name = 'UserEx'
-        # verbose_name_plural：人类可读的单复数名称，这里“用户”复数名称为“用户”
-        verbose_name_plural = verbose_name
-        # ordering：如排序选项，这里以id降序来排序
-        ordering = ['-id']
-
-    # 对象的字符串表达式(unicode格式)
-    def __unicode__(self):
-        return self.nicename
-
-
-# 用户(User)模型
-# 采用的继承方式扩展用户信息
-class User(AbstractUser):
-    # 在继承的基础上新增2个字段
-    last_login = models.DateTimeField(_('date joined'), default=timezone.now)
-    usermeta = models.OneToOneField(UserMeta, verbose_name='用户扩展信息')
-
-    # 使用内部的class Meta 定义模型的元数据
-    class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
         # ordering：如排序选项，这里以id降序来排序
         ordering = ['-id']
 
     # 对象的字符串表达式(unicode格式)
     def __unicode__(self):
         return self.username
+
 
 
