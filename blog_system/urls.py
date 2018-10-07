@@ -16,16 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include, url
+# noinf的【urls.py】设置,使输入IP就能访问首页
+from noinf.views import index
 
+"""
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^noinf/', include('noinf.urls')),
 ]
-
-# noinf的【urls.py】设置,使输入IP就能访问首页
-from noinf.views import index
+"""
 
 urlpatterns = [
     url(r'^$', index, name='index'),
-
+    path('admin/', admin.site.urls),
 ]
