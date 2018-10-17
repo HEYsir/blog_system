@@ -41,7 +41,7 @@ class NavCategory(models.Model):
         verbose_name_plural = verbose_name
         ordering = ['index', 'id']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -49,14 +49,14 @@ class NavCategory(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=30, verbose_name='分类名称')
     index = models.IntegerField(default=999, verbose_name='分类的排序')
-    pid = models.ForeignKey(NavCategory, on_delete=models.CASCADE, blank=True, verbose_name="父级分类")
+    pid = models.ForeignKey(NavCategory, on_delete=models.CASCADE, blank=True, null=True, verbose_name="父级分类")
 
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = verbose_name
         ordering = ['index', 'id']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -68,7 +68,7 @@ class Tag(models.Model):
         verbose_name = "tag"
         verbose_name_plural = verbose_name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -80,19 +80,19 @@ class Article(models.Model):
     click_count = models.IntegerField(default=0, verbose_name='点击次数')
     is_recommend = models.BooleanField(default=False, verbose_name='是否推荐')
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
-    date_modify = models.DateTimeField(auto_now_add=True, verbose_name='修改时间')
+    date_modify = models.DateTimeField(auto_now=True, verbose_name='修改时间')
 
     #
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='分类')
-    tag = models.ManyToManyField(Tag, verbose_name='标签')
+    tag = models.ManyToManyField(Tag, blank=True, verbose_name='标签')
 
     class Meta:
         verbose_name = 'Article'
         verbose_name_plural = verbose_name
         ordering = ['-date_publish']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -104,7 +104,7 @@ class Comment(models.Model):
     url = models.URLField(max_length=100, blank=True, null=True, verbose_name='个人网页地址')
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     #
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, verbose_name='用户')
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, verbose_name='用户')
     article = models.ForeignKey(Article, on_delete=models.CASCADE, blank=True, null=True, verbose_name='文章')
     pid = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, verbose_name='父级评论')
 
@@ -112,7 +112,7 @@ class Comment(models.Model):
         verbose_name = 'comment'
         verbose_name_plural = verbose_name
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.id)
 
 
@@ -129,7 +129,7 @@ class Links(models.Model):
         verbose_name_plural = verbose_name
         ordering = ['index', 'id']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -147,5 +147,5 @@ class Ad(models.Model):
         verbose_name_plural = verbose_name
         ordering = ['index', 'id']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
