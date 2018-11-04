@@ -3,6 +3,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
+
+def user_avatar_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'avatar/user_{0}/{1}'.format(instance.nicename, filename)
+
 # 用户(User)模型
 # 采用的继承方式扩展用户信息
 class User(AbstractUser):
@@ -10,7 +15,7 @@ class User(AbstractUser):
     nicename = models.CharField(
         "昵称", max_length=32, unique=True,
         help_text='Required. 32 characters or fewer. Letters, digits and @/./+/-/_ only.')
-    avatar = models.ImageField("头像", upload_to='avatar/%Y/%m', default='avatar/default.png',
+    avatar = models.ImageField("头像", upload_to=user_avatar_path, default='avatar/default.png',
                                max_length=200, blank=True, null=True)
     mobile = models.CharField("手机号码", max_length=11, blank=True, null=True, unique=True)
     qq = models.CharField("QQ", max_length=20, blank=True, null=True)
@@ -133,11 +138,16 @@ class Links(models.Model):
         return self.title
 
 
+def ad_image_path(instance, filename):
+        # file will be uploaded to MEDIA_ROOT/ad_<id>_<title>/<filename>
+        return 'ad/ad_{0}_{1}/{2}'.format(instance.id, instance.title, filename)
+
+
 # 广告(ad)模型
 class Ad(models.Model):
     title = models.CharField(max_length=50, verbose_name='广告标题')
     description = models.CharField(max_length=200, verbose_name='广告描述')
-    image_url = models.ImageField(upload_to='ad/%Y/%m', verbose_name='图片路径')
+    image_url = models.ImageField(upload_to=ad_image_path, verbose_name='图片路径')
     callback_url = models.URLField(null=True, blank=True, verbose_name='回调url')
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     index = models.IntegerField(default=999, verbose_name='排列顺序(从小到大)')

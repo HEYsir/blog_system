@@ -18,6 +18,9 @@ from django.urls import path
 from django.conf.urls import include, url
 # noinf的【urls.py】设置,使输入IP就能访问首页
 from noinf.views import index
+from django.conf import settings
+from django.views.static import serve
+
 
 """
 urlpatterns = [
@@ -29,4 +32,5 @@ urlpatterns = [
 urlpatterns = [
     url(r'^$', index, name='index'),
     path('admin/', admin.site.urls),
+    url(r"^uploads/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT, }),
 ]
