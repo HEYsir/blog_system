@@ -14,6 +14,14 @@ admin.site.register(Ad)
 
 
 class ArticleAdmin(admin.ModelAdmin):
+
+    class Media:
+        js = (
+            '/static/kindeditor/kindeditor-all-min.js',
+            '/static/kindeditor/lang/zh-CN.js',
+            '/static/kindeditor/config.js',
+        )
+
     # admin 选项控制变更列表所显示的列
     list_display = ('title', 'desc', 'date_publish', 'click_count',)
     # admin 选项控制变更列表可以链接的列

@@ -1,3 +1,5 @@
 blog_system/__pycache__/
 noinf/__pycache__/
 .idea/
+
+noinf/migrations/
