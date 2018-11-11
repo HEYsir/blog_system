@@ -3,3 +3,5 @@ noinf/__pycache__/
 .idea/
 
 noinf/migrations/
+
+uploads/

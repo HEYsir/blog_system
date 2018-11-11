@@ -21,6 +21,7 @@ from noinf.views import index
 from django.conf import settings
 from django.views.static import serve
 
+from noinf.upload import upload_image
 
 """
 urlpatterns = [
@@ -32,5 +33,6 @@ urlpatterns = [
 urlpatterns = [
     url(r'^$', index, name='index'),
     path('admin/', admin.site.urls),
+    url(r'^uploads/(?P<dir_name>[^/]+)$', upload_image, name='upload_image'),
     url(r"^uploads/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT, }),
 ]
