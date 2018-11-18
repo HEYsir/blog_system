@@ -159,3 +159,17 @@ class Ad(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# 网站信息(siteInfo)模型
+class MySiteInfo(models.Model):
+    title = "网站信息"
+    beian_police = models.CharField(max_length=50, null=True, blank=True, verbose_name='公安备案号')
+    beian_miit = models.CharField(max_length=50, null=True, blank=True, verbose_name='ICP备案号')
+
+    class Meta:
+        verbose_name = '网站信息'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.title

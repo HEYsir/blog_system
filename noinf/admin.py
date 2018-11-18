@@ -42,6 +42,17 @@ class ArticleAdmin(admin.ModelAdmin):
         obj.user = request.user
         super().save_model(request, obj, form, change)
 
-
 # 使用自定义的ModelAdmin来注册
 admin.site.register(Article, ArticleAdmin)
+
+
+@admin.register(MySiteInfo)
+class MySiteInfoAdmin(admin.ModelAdmin):
+
+    # 控制不允许增加和删除
+    def has_add_permission(self, request):
+        beian = MySiteInfo.objects.all()
+        return not beian.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
