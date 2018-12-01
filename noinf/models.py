@@ -54,7 +54,7 @@ class NavCategory(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=30, verbose_name='分类名称')
     index = models.IntegerField(default=999, verbose_name='分类的排序')
-    pid = models.ForeignKey(NavCategory, on_delete=models.CASCADE, blank=True, null=True, verbose_name="父级分类")
+    pid = models.ForeignKey(NavCategory, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="父级分类")
 
     class Meta:
         verbose_name = 'Category'

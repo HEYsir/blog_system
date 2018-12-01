@@ -2,6 +2,13 @@ from django.shortcuts import render
 from .models import *
 
 
+# 全局的settings文件的配置
+def global_setting(request):
+    top_nav = NavCategory.objects.all()
+
+    return locals()
+
+
 # Create your views here.
 def index(request):
     beian_police = ""
