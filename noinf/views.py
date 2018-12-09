@@ -5,7 +5,7 @@ from .models import *
 # 全局的settings文件的配置
 def global_setting(request):
     top_nav = NavCategory.objects.all()
-
+    userInfo = User.objects.all()[0]
     return locals()
 
 

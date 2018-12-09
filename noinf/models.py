@@ -15,6 +15,7 @@ class User(AbstractUser):
     nicename = models.CharField(
         "昵称", max_length=32, unique=True,
         help_text='Required. 32 characters or fewer. Letters, digits and @/./+/-/_ only.')
+    motto = models.CharField("签名", max_length=128, blank=True, null=True)
     avatar = models.ImageField("头像", upload_to=user_avatar_path, default='avatar/default.png',
                                max_length=200, blank=True, null=True)
     mobile = models.CharField("手机号码", max_length=11, blank=True, null=True, unique=True)
