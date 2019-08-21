@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import *
 from django.apps import apps
 
+import re
 
 # def getmodelfield(appname, modelname, exclude):
 #     """
@@ -51,6 +52,7 @@ def index(request):
     if beian:
         # 由于返回的是列表，这里不增加列表索引会出错
         beian_police = beian[0].beian_police
+        beian_police_no = re.sub("\D", "", beian_police)
         beian_miit = beian[0].beian_miit
 
     return render(request, 'index.html', locals())
