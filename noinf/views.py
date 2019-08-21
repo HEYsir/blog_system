@@ -48,6 +48,7 @@ def global_setting(request):
 def index(request):
     beian_police = ""
     beian_miit = ""
+    beian_police_no = ""
     beian = MySiteInfo.objects.all()
     if beian:
         # 由于返回的是列表，这里不增加列表索引会出错
@@ -55,4 +56,9 @@ def index(request):
         beian_police_no = re.sub("\D", "", beian_police)
         beian_miit = beian[0].beian_miit
 
+    last_article_list = Article.objects.all().order_by("-date_publish")[:5]
+    popular_article_list = Article.objects.all().order_by("-click_count")[:5]
     return render(request, 'index.html', locals())
+
+def detail(request, id):  # 查看文章详情
+    pass
