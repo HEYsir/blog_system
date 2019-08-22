@@ -25,8 +25,9 @@ exclude = ['username','email','is_staff','last_login','password','last_name','da
 
 # 全局的settings文件的配置
 def global_setting(request):
-    top_nav = NavCategory.objects.all()
+    top_nav = NavCategory.objects.exclude(name='未分类')
     userInfo = User.objects.all()[0] #在没有创建用户的情况下会导致访问失败
+
     # user_fileds = User._meta.get_fields()
     user_fileds = User._meta._get_fields(reverse=False, include_parents=False)
     # print(user_fileds)
@@ -56,8 +57,8 @@ def index(request):
         beian_police_no = re.sub("\D", "", beian_police)
         beian_miit = beian[0].beian_miit
 
-    last_article_list = Article.objects.all().order_by("-date_publish")[:5]
-    popular_article_list = Article.objects.all().order_by("-click_count")[:5]
+    last_article_list = Article.objects.all().order_by("-date_publish")
+    popular_article_list = Article.objects.all().order_by("-click_count")
     return render(request, 'index.html', locals())
 
 def detail(request, id):  # 查看文章详情
