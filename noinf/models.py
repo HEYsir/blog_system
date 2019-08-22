@@ -38,9 +38,19 @@ class User(AbstractUser):
 
 
 # 分类(Top navigateion)模型
+def get_NavCategory_index():
+    try:
+        maxIndexDic = NavCategory.objects.all().aggregate(models.Max('index'))
+        lastIndex = maxIndexDic['index__max']
+        lastIndex += 1
+    except:
+        lastIndex = 0
+
+    return lastIndex
+
 class NavCategory(models.Model):
     name = models.CharField(max_length=30, verbose_name='导航名称')
-    index = models.IntegerField(default=999, verbose_name='分类的排序')
+    index = models.IntegerField(default=get_NavCategory_index, unique=True, verbose_name='分类的排序')
 
     class Meta:
         verbose_name = 'nav_name'
@@ -50,12 +60,28 @@ class NavCategory(models.Model):
     def __str__(self):
         return self.name
 
-
 # 分类(category)模型
+def get_Category_index():
+    try:
+        maxIndexDic = Category.objects.all().aggregate(models.Max('index'))
+        lastIndex = maxIndexDic['index__max']
+        lastIndex += 1
+    except:
+        lastIndex = 0
+
+    return lastIndex
+
+
+def get_NavCategory_default_id():
+    oneItem = NavCategory.objects.get_or_create(name='未分类')[0]
+    return oneItem.id
+
+
 class Category(models.Model):
     name = models.CharField(max_length=30, verbose_name='分类名称')
-    index = models.IntegerField(default=999, verbose_name='分类的排序')
-    pid = models.ForeignKey(NavCategory, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="父级分类")
+    index = models.IntegerField(default=0, unique=True, verbose_name='分类的排序')
+    # 改成不允许删除，否则子分类没有地方可以放
+    pid = models.ForeignKey(NavCategory, on_delete=models.PROTECT, default=get_NavCategory_default_id, blank=True, null=False, verbose_name="父级分类")
 
     class Meta:
         verbose_name = 'Category'
@@ -79,18 +105,23 @@ class Tag(models.Model):
 
 
 # 文章(aticle)模型
+def get_Category_default_id():
+    oneItem = Category.objects.get_or_create(name='未分类')[0]
+    return oneItem.id
+
 class Article(models.Model):
     title = models.CharField(max_length=50, verbose_name='文章标题')
     desc = models.CharField(max_length=50, verbose_name='文章描述')
     content = models.TextField(verbose_name='文章内容')
     click_count = models.IntegerField(default=0, verbose_name='点击次数')
+    likes_count = models.IntegerField(default=0, verbose_name='点赞次数')
     is_recommend = models.BooleanField(default=False, verbose_name='是否推荐')
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     date_modify = models.DateTimeField(auto_now=True, verbose_name='修改时间')
 
     #
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='分类')
+    category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default=get_Category_default_id, blank=True, null=False, verbose_name='分类')
     tag = models.ManyToManyField(Tag, blank=True, verbose_name='标签')
 
     class Meta:
