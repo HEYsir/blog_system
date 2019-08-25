@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import *
 from django.apps import apps
+from django.core.paginator import InvalidPage, EmptyPage, PageNotAnInteger, Paginator
 
 import re
 
@@ -45,6 +46,22 @@ def global_setting(request):
     return locals()
 
 
+# 定义一个分页函数
+def getPage(request, article_all, per_page_num):
+    # 将数据按照规定每页显示 10 条, 进行分割
+    paginator = Paginator(article_all, per_page_num)
+
+    try:
+        # 获取 url 后面的 page 参数的值, 首页不显示 page 参数, 默认值是 1
+        page = int(request.GET.get('page', 1))
+        article_list = paginator.page(page)
+    except (InvalidPage, EmptyPage, PageNotAnInteger):
+        # 如果请求的页数不是整数、页面不存在、页数超范围, 返回第一页。
+        article_list = paginator.page(1)
+
+    return article_list
+
+
 # Create your views here.
 def index(request):
     beian_police = ""
@@ -59,6 +76,12 @@ def index(request):
 
     last_article_list = Article.objects.all().order_by("-date_publish")
     popular_article_list = Article.objects.all().order_by("-click_count")
+
+
+
+    article_list = getPage(request, last_article_list, 10)
+
+
     # 广告数据
     ad_list = Ad.objects.all().order_by('-index')[:4]
 
