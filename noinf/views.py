@@ -59,6 +59,9 @@ def index(request):
 
     last_article_list = Article.objects.all().order_by("-date_publish")
     popular_article_list = Article.objects.all().order_by("-click_count")
+    # 广告数据
+    ad_list = Ad.objects.all().order_by('-index')[:4]
+
     return render(request, 'index.html', locals())
 
 def detail(request, id):  # 查看文章详情
