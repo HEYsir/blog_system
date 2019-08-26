@@ -88,4 +88,10 @@ def index(request):
     return render(request, 'index.html', locals())
 
 def detail(request, id):  # 查看文章详情
-    pass
+    try:
+        # 获取文章信息
+        article = Article.objects.get(pk=id)
+    except Article.DoesNotExist:
+        return render(request, '', {'reason': '没有找到对应的文章'})
+
+    return render(request, 'article.html', locals())
