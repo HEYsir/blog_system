@@ -1,0 +1,16 @@
+{
+  "SECRET_KEY": "c#amus!qr)l*2i+x$pn1u&grs1gx_wqqliezz2kx=tag!*ora&",
+  "DEBUG": true,
+  "ALLOWED_HOSTS": [
+    "localhost",
+    "127.0.0.1",
+    "[::1]"
+  ],
+  "db_config": {
+    "NAME": "xxx",  
+    "USER": "xxx",
+    "PASSWORD": "xxx",
+    "HOST": "",
+    "PORT": ""
+  }
+}

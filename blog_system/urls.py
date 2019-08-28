@@ -22,6 +22,8 @@ from django.conf import settings
 from django.views.static import serve
 
 from noinf.upload import upload_image
+##支持生产部署时的静态文件解析
+from django.views import static
 
 """
 urlpatterns = [
@@ -36,4 +38,7 @@ urlpatterns = [
     path('articles/<int:id>/', views.detail, name='detail'),
     url(r'^uploads/(?P<dir_name>[^/]+)$', upload_image, name='upload_image'),
     url(r"^uploads/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT, }),
+    ##支持生产部署时的静态文件解析
+    url(r'^static/(?P<path>.*)$', static.serve,
+          {'document_root': settings.STATIC_ROOT}, name='static'),
 ]

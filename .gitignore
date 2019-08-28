@@ -5,3 +5,4 @@ noinf/__pycache__/
 noinf/migrations/
 
 uploads/
+collect_static/
