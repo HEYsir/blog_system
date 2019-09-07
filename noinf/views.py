@@ -91,6 +91,9 @@ def detail(request, id):  # 查看文章详情
     try:
         # 获取文章信息
         article = Article.objects.get(pk=id)
+        # 浏览量 +1
+        article.click_count += 1
+        article.save(update_fields=['click_count'])
     except Article.DoesNotExist:
         return render(request, '', {'reason': '没有找到对应的文章'})
 
