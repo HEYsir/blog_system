@@ -104,6 +104,18 @@ class Tag(models.Model):
         return self.name
 
 
+class Topic(models.Model):
+    title = models.CharField(max_length=50, verbose_name='专题名称')
+    desc = models.CharField(max_length=50, null=True, blank=True, verbose_name='专题描述')
+
+    class Meta:
+        verbose_name = '专题文章'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.title
+
+
 # 文章(aticle)模型
 def get_Category_default_id():
     oneItem = Category.objects.get_or_create(name='未分类')[0]
@@ -123,6 +135,9 @@ class Article(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default=get_Category_default_id, blank=True, null=False, verbose_name='分类')
     tag = models.ManyToManyField(Tag, blank=True, verbose_name='标签')
+
+    # 专题属性
+    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='主题')
 
     class Meta:
         verbose_name = 'Article'
@@ -205,3 +220,4 @@ class MySiteInfo(models.Model):
 
     def __str__(self):
         return self.title
+

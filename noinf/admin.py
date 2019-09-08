@@ -30,7 +30,7 @@ class ArticleAdmin(admin.ModelAdmin):
 #   list_editable = ('click_count',)
     fieldsets = (
         (None, {
-            'fields': ('title', 'desc', 'content')
+            'fields': ('title', 'desc', 'content', 'topic')
         }),
         ('高级设置', {
             # 'classes': ('collapse',),
@@ -56,3 +56,7 @@ class MySiteInfoAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+# 使用自定义的ModelAdmin来注册
+admin.site.register(Topic)

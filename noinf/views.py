@@ -76,7 +76,7 @@ def index(request):
 
     last_article_list = Article.objects.all().order_by("-date_publish")
     popular_article_list = Article.objects.all().order_by("-click_count")
-
+    topic_list = Topic.objects.all()
 
 
     article_list = getPage(request, last_article_list, 10)
