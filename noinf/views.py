@@ -75,6 +75,13 @@ def index(request):
         beian_miit = beian[0].beian_miit
 
     last_article_list = Article.objects.all().order_by("-date_publish")
+    topNavRq = request.GET.get('topNav')
+    try:
+        topNavIdx = int(topNavRq)
+        last_article_list = last_article_list.filter(category__pid__id=topNavIdx)
+    except:
+        print("?topNav=", topNavRq)
+
     popular_article_list = Article.objects.all().order_by("-click_count")
     topic_list = Topic.objects.all()
 
@@ -87,6 +94,7 @@ def index(request):
 
     return render(request, 'index.html', locals())
 
+
 def detail(request, id):  # 查看文章详情
     try:
         # 获取文章信息
@@ -98,3 +106,15 @@ def detail(request, id):  # 查看文章详情
         return render(request, '', {'reason': '没有找到对应的文章'})
 
     return render(request, 'article.html', locals())
+
+
+def topic_article(request, topic_id):
+    try:
+        # 获取文章信息
+        topic = Topic.objects.get(id = topic_id)
+        topic_article = topic.article_set.all()
+        article_list = getPage(request, topic_article, 10)
+    except:
+        return render(request, '404.html', {'reason': '没有找到对应的文章'})
+
+    return render(request, 'index.html', locals())

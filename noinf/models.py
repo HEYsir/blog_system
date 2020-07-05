@@ -38,40 +38,28 @@ class User(AbstractUser):
 
 
 # 分类(Top navigateion)模型
-def get_NavCategory_index():
-    try:
-        maxIndexDic = NavCategory.objects.all().aggregate(models.Max('index'))
-        lastIndex = maxIndexDic['index__max']
-        lastIndex += 1
-    except:
-        lastIndex = 0
-
-    return lastIndex
+# def get_NavCategory_index():
+#     try:
+#         maxIndexDic = NavCategory.objects.all().aggregate(models.Max('index'))
+#         lastIndex = maxIndexDic['index__max']
+#         lastIndex += 1
+#     except:
+#         lastIndex = 0
+#
+#     return lastIndex
 
 class NavCategory(models.Model):
     name = models.CharField(max_length=30, verbose_name='导航名称')
-    index = models.IntegerField(default=get_NavCategory_index, unique=True, verbose_name='分类的排序')
 
     class Meta:
         verbose_name = 'nav_name'
         verbose_name_plural = verbose_name
-        ordering = ['index', 'id']
+        ordering = ['id']
 
     def __str__(self):
         return self.name
 
 # 分类(category)模型
-def get_Category_index():
-    try:
-        maxIndexDic = Category.objects.all().aggregate(models.Max('index'))
-        lastIndex = maxIndexDic['index__max']
-        lastIndex += 1
-    except:
-        lastIndex = 0
-
-    return lastIndex
-
-
 def get_NavCategory_default_id():
     oneItem = NavCategory.objects.get_or_create(name='未分类')[0]
     return oneItem.id
@@ -79,14 +67,13 @@ def get_NavCategory_default_id():
 
 class Category(models.Model):
     name = models.CharField(max_length=30, verbose_name='分类名称')
-    index = models.IntegerField(default=0, unique=True, verbose_name='分类的排序')
     # 改成不允许删除，否则子分类没有地方可以放
     pid = models.ForeignKey(NavCategory, on_delete=models.PROTECT, default=get_NavCategory_default_id, blank=True, null=False, verbose_name="父级分类")
 
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = verbose_name
-        ordering = ['index', 'id']
+        ordering = ['id']
 
     def __str__(self):
         return self.name

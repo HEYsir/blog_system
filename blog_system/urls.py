@@ -35,6 +35,7 @@ urlpatterns = [
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     path('admin/', admin.site.urls),
+    path('topic/<int:topic_id>/', views.topic_article, name='topic_article'),
     path('articles/<int:id>/', views.detail, name='detail'),
     url(r'^uploads/(?P<dir_name>[^/]+)$', upload_image, name='upload_image'),
     url(r"^uploads/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT, }),
