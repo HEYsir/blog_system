@@ -141,3 +141,8 @@ AUTH_USER_MODEL = 'noinf.User'
 # upload files (file, Images)
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+WebHooks = config['WebHooks']
+PUBLISH_SEC = WebHooks['secret']
+PUBLISH_URL = WebHooks['publishUrl']
+CONTENT_PATH = WebHooks['contentPath']

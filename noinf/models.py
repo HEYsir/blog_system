@@ -109,7 +109,7 @@ def get_Category_default_id():
     return oneItem.id
 
 class Article(models.Model):
-    title = models.CharField(max_length=50, verbose_name='文章标题')
+    title = models.CharField(max_length=50, verbose_name='文章标题', unique=True, db_index=True)
     desc = models.CharField(max_length=50, verbose_name='文章描述')
     content = models.TextField(verbose_name='文章内容')
     click_count = models.IntegerField(default=0, verbose_name='点击次数')

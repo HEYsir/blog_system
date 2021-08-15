@@ -31,7 +31,6 @@ urlpatterns = [
     url(r'^noinf/', include('noinf.urls')),
 ]
 """
-
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     path('admin/', admin.site.urls),
@@ -42,4 +41,5 @@ urlpatterns = [
     ##支持生产部署时的静态文件解析
     url(r'^static/(?P<path>.*)$', static.serve,
           {'document_root': settings.STATIC_ROOT}, name='static'),
+    path(settings.PUBLISH_URL, views.hookPublish),
 ]

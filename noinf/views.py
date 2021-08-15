@@ -2,8 +2,19 @@ from django.shortcuts import render
 from .models import *
 from django.apps import apps
 from django.core.paginator import InvalidPage, EmptyPage, PageNotAnInteger, Paginator
-
+from django.http import Http404, HttpResponse
 import re
+from django.views.decorators.http import require_POST
+from django.conf import settings
+
+import time
+import hmac
+import hashlib
+import base64
+import urllib
+import json
+
+import git
 
 # def getmodelfield(appname, modelname, exclude):
 #     """
@@ -118,3 +129,78 @@ def topic_article(request, topic_id):
         return render(request, '404.html', {'reason': '没有找到对应的文章'})
 
     return render(request, 'index.html', locals())
+
+
+def git_update(path):
+    g = git.Git(path)
+    g.pull()
+
+@require_POST # 限制只能是POST方法请求
+def hookPublish(request):
+    if 'application/json' != request.META.get('CONTENT_TYPE'):
+        return HttpResponse(status=404)
+    if 'git-oschina-hook' != request.META.get('HTTP_USER_AGENT'):
+        return HttpResponse(status=404)
+
+    timestamp = request.META.get('HTTP_X_GITEE_TIMESTAMP')
+    reqToken = request.META.get('HTTP_X_GITEE_TOKEN')
+    reqEvent = request.META.get('HTTP_X_GITEE_EVENT')
+    if not (timestamp and reqToken and reqEvent):
+        return HttpResponse(status=404)
+    if 'Push Hook' != reqEvent:
+        return HttpResponse(status=404)
+    timestamp = int(timestamp)
+    if not settings.DEBUG:
+        if abs(timestamp/1000 - time.time())/3600 > 1:
+            return HttpResponse(status=404)
+    
+    secret = settings.PUBLISH_SEC
+    secret_enc = bytes(secret, 'utf-8')
+    string_to_sign = '{}\n{}'.format(timestamp, secret)
+    # string_to_sign_enc = bytes(string_to_sign, 'utf-8')
+    string_to_sign_enc = string_to_sign.encode('utf-8')
+    print(type(string_to_sign_enc))
+    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+    if settings.DEBUG:
+        print(timestamp)
+        print(sign)
+        print(reqToken)
+    else:
+        if sign != reqToken:
+            return HttpResponse(status=404)
+
+    # 获取报文
+    postBody = request.body
+    print(postBody)
+    json_result = json.loads(postBody)
+    print(json_result)
+
+    path = settings.CONTENT_PATH
+    git_update(path)
+    files = []
+    commits = json_result['commits']
+    publishUser = User.objects.get(username='HEYsir')
+    for commit in commits:
+        tFiles = commit['added']
+        for file in tFiles:
+            # 获取文件并更新到数据库
+            with open(path+file, mode='r') as fd:
+                text = fd.read()
+                (title, format) = file.split('.') 
+                Article.objects.create(title=title, desc='', content=text, user=publishUser)
+        # tFiles = commit['remove']
+        # for file in tFiles:
+        #     # 获取文件并更新到数据库
+        #     with open(path+file, mode='r') as fd:
+        #         text = fd.read()
+        #         (title, format) = file.split('.') 
+        #         Article.objects.filter(title=title, desc='', content=text, user=publishUser).update
+        tFiles = commit['modified']
+        for file in tFiles:
+            # 获取文件并更新到数据库
+            with open(path+file, mode='r') as fd:
+                text = fd.read()
+                (title, format) = file.split('.') 
+                Article.objects.filter(title=title).update(content=text)
+    return HttpResponse(status=200)

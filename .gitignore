@@ -1,6 +1,6 @@
-blog_system/__pycache__/
-noinf/__pycache__/
+__pycache__/
 .idea/
+.vscode/
 
 noinf/migrations/
 
