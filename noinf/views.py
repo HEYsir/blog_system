@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import *
+from noinf.models import *
 from django.apps import apps
 from django.core.paginator import InvalidPage, EmptyPage, PageNotAnInteger, Paginator
 from django.http import Http404, HttpResponse
@@ -15,6 +15,8 @@ import urllib
 import json
 
 import git
+import frontmatter
+import markdown
 
 # def getmodelfield(appname, modelname, exclude):
 #     """
@@ -135,6 +137,14 @@ def git_update(path):
     g = git.Git(path)
     g.pull()
 
+
+def md2html(fileContent):
+    exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite','markdown.extensions.tables','markdown.extensions.toc']	
+    md =  markdown.Markdown(extensions = exts)
+    html = md.convert(fileContent)
+    return html
+
+
 @require_POST # 限制只能是POST方法请求
 def hookPublish(request):
     if 'application/json' != request.META.get('CONTENT_TYPE'):
@@ -185,10 +195,44 @@ def hookPublish(request):
         tFiles = commit['added']
         for file in tFiles:
             # 获取文件并更新到数据库
-            with open(path+file, mode='r') as fd:
-                text = fd.read()
-                (title, format) = file.split('.') 
-                Article.objects.create(title=title, desc='', content=text, user=publishUser)
+            (filename, format) = file.split('.') 
+            with open(path+file, mode='r', encoding="utf-8") as fd:
+                metadata = {}
+                content = fd.read()
+                if format in ['md', 'MD', 'Md', 'mD']:
+                    metadata, mdContent = frontmatter.parse(content)
+                    content = md2html(mdContent)
+                print(metadata)
+                title = metadata.get('title')
+                summery = metadata.get('summery') if metadata.get('summery') else ''
+                formdata = {
+                    'title':title if title else filename, 
+                    'desc':summery, 
+                    'content':content, 
+                    'user':publishUser,
+                }
+                # 配置文章分类
+                category = metadata.get('category')  
+                if category:
+                    nav = metadata.get('nav')
+                    navObj = NavCategory.objects.filter(name=nav).first() if nav else None
+                    if navObj is None:
+                        categoryObj, isCreated = Category.objects.get_or_create(name=category)
+                    else:
+                        categoryObj, isCreated = Category.objects.get_or_create(name=category, pid=navObj)
+                    formdata['category'] = categoryObj
+                # 配置文章主题
+                topic = metadata.get('topic')
+                topicDesc = metadata.get('toptopicDescic')
+                if topic:
+                    topicObj, isCreated = Topic.objects.get_or_create(title=topic, desc=topicDesc)
+                    formdata['topic'] = topicObj
+                newArticleObj = Article.objects.create(**formdata)
+                # 配置文章标签
+                tags = metadata.get('tag')
+                for tag in tags:
+                    tagObj, isCreated = Tag.objects.get_or_create(name=tag)
+                    newArticleObj.tag.add(tagObj)
         # tFiles = commit['remove']
         # for file in tFiles:
         #     # 获取文件并更新到数据库
