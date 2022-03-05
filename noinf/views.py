@@ -141,7 +141,19 @@ def git_update(path):
 def md2html(fileContent):
     exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite','markdown.extensions.tables','markdown.extensions.toc']	
     md =  markdown.Markdown(extensions = exts)
-    html = md.convert(fileContent)
+    htmlTemplate= '''
+    <html lang="zh-cn">
+    <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <link href="default.css" rel="stylesheet">
+    <link href="github.css" rel="stylesheet">
+    </head>
+    <body>
+    %s
+    </body>
+    </html>
+    '''
+    html = htmlTemplate%md.convert(fileContent)
     return html
 
 
@@ -201,7 +213,8 @@ def hookPublish(request):
                 content = fd.read()
                 if format in ['md', 'MD', 'Md', 'mD']:
                     metadata, mdContent = frontmatter.parse(content)
-                    content = md2html(mdContent)
+                    # content = md2html(mdContent)
+                    content = mdContent
                 print(metadata)
                 title = metadata.get('title')
                 summery = metadata.get('summery') if metadata.get('summery') else ''
