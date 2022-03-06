@@ -118,7 +118,7 @@ def detail(request, id):  # 查看文章详情
     except Article.DoesNotExist:
         return render(request, '', {'reason': '没有找到对应的文章'})
 
-    return render(request, 'article.html', locals())
+    return render(request, 'article-pop.html', locals())
 
 
 def topic_article(request, topic_id):
@@ -141,19 +141,7 @@ def git_update(path):
 def md2html(fileContent):
     exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite','markdown.extensions.tables','markdown.extensions.toc']	
     md =  markdown.Markdown(extensions = exts)
-    htmlTemplate= '''
-    <html lang="zh-cn">
-    <head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <link href="default.css" rel="stylesheet">
-    <link href="github.css" rel="stylesheet">
-    </head>
-    <body>
-    %s
-    </body>
-    </html>
-    '''
-    html = htmlTemplate%md.convert(fileContent)
+    html = md.convert(fileContent)
     return html
 
 
@@ -213,8 +201,8 @@ def hookPublish(request):
                 content = fd.read()
                 if format in ['md', 'MD', 'Md', 'mD']:
                     metadata, mdContent = frontmatter.parse(content)
-                    # content = md2html(mdContent)
-                    content = mdContent
+                    content = md2html(mdContent)
+                    # content = mdContent
                 print(metadata)
                 title = metadata.get('title')
                 summery = metadata.get('summery') if metadata.get('summery') else ''
