@@ -108,6 +108,13 @@ def get_Category_default_id():
     oneItem = Category.objects.get_or_create(name='未分类')[0]
     return oneItem.id
 
+
+STATUS_CHOICES = [
+    ('d', '草稿'),
+    ('p', '发布'),
+    ('w', '撤回'),
+]
+
 class Article(models.Model):
     title = models.CharField(max_length=50, verbose_name='文章标题', unique=True, db_index=True)
     desc = models.CharField(max_length=50, verbose_name='文章描述')
@@ -117,7 +124,8 @@ class Article(models.Model):
     is_recommend = models.BooleanField(default=False, verbose_name='是否推荐')
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     date_modify = models.DateTimeField(auto_now=True, verbose_name='修改时间')
-
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='d')
+    
     #
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default=get_Category_default_id, blank=True, null=False, verbose_name='分类')

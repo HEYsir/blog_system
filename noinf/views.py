@@ -87,7 +87,7 @@ def index(request):
         beian_police_no = re.sub("\D", "", beian_police)
         beian_miit = beian[0].beian_miit
 
-    last_article_list = Article.objects.all().order_by("-date_publish")
+    last_article_list = Article.objects.filter(status='p').order_by("-date_publish")
     topNavRq = request.GET.get('topNav')
     try:
         topNavIdx = int(topNavRq)
@@ -95,7 +95,7 @@ def index(request):
     except:
         print("?topNav=", topNavRq)
 
-    popular_article_list = Article.objects.all().order_by("-click_count")
+    popular_article_list = Article.objects.filter(status='p').order_by("-click_count")
     topic_list = Topic.objects.all()
 
 

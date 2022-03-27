@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib import messages
+from django.utils.translation import ngettext
 
 # Register your models here.
 from noinf.models import *
@@ -23,7 +25,7 @@ class ArticleAdmin(admin.ModelAdmin):
         )
 
     # admin 选项控制变更列表所显示的列
-    list_display = ('title', 'desc', 'date_publish', 'click_count',)
+    list_display = ('title', 'desc', 'date_publish', 'click_count','status')
     # admin 选项控制变更列表可以链接的列
     list_display_links = ('title', 'desc',)
     # admin 选项控制变更列表可以直接编辑的列
@@ -37,7 +39,30 @@ class ArticleAdmin(admin.ModelAdmin):
             'fields': ('is_recommend', 'category', 'tag')
         }),
     )
+    # 自定义动作
+    actions = ['publish_status', 'withdraw_status']
+    
+    # 添加admin动作（发表文章）
+    def publish_status(self, request, queryset):
+        updated = queryset.update(status='p')
+        self.message_user(request, ngettext(
+            '所选文章已发布 ',
+            '所选文章已发布',
+            updated,
+        ), messages.SUCCESS)
+    # 指定后台界面动作的关键词
+    publish_status.short_description = "发布文章"
 
+    # 添加admin动作（撤回文章）
+    def withdraw_status(self, request, queryset):
+        withdraw = queryset.update(status='w')
+        self.message_user(request, ngettext(
+            '所选文章已撤回 ',
+            '所选文章已撤回',
+            withdraw,
+        ), messages.SUCCESS)
+    withdraw_status.short_description = '撤回文章'
+    
     def save_model(self, request, obj, form, change):
         obj.user = request.user
         super().save_model(request, obj, form, change)
