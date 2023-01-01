@@ -9,3 +9,8 @@ sudo yum install python3-devel
 sudo yum install zlib-devel
 sudo yum install libjpeg-turbo-devel
 ubuntu是否需要解决依赖，不记得了。
+
+## 安装mysqlclient
+apt install python3-dev libmysqlclient-dev
+pip install wheel
+pip install mysqlclient
