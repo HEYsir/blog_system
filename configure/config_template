@@ -12,5 +12,10 @@
     "PASSWORD": "xxx",
     "HOST": "",
     "PORT": ""
+  },
+  "WebHooks": {
+    "secret": "",
+    "publishUrl": "",
+    "contentPath": ""
   }
 }
