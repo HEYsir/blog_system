@@ -192,7 +192,9 @@ def hookPublish(request):
     commits = json_result['commits']
     publishUser = User.objects.get(username='HEYsir')
     for commit in commits:
-        tFiles = commit['added']
+        newFiles = commit.get('added') or []
+        mdfFiles = commit.get('modified') or []
+        tFiles = newFiles + mdfFiles
         for file in tFiles:
             # 获取文件并更新到数据库
             (filename, format) = file.split('.') 
@@ -204,10 +206,10 @@ def hookPublish(request):
                     content = md2html(mdContent)
                     # content = mdContent
                 print(metadata)
-                title = metadata.get('title')
+                title = metadata.get('title') or filename
                 summery = metadata.get('summery') if metadata.get('summery') else ''
                 formdata = {
-                    'title':title if title else filename, 
+                    'title':title, 
                     'desc':summery, 
                     'content':content, 
                     'user':publishUser,
@@ -228,7 +230,7 @@ def hookPublish(request):
                 if topic:
                     topicObj, isCreated = Topic.objects.get_or_create(title=topic, desc=topicDesc)
                     formdata['topic'] = topicObj
-                newArticleObj = Article.objects.create(**formdata)
+                newArticleObj = Article.objects.update_or_create(defaults=formdata, title=title)
                 # 配置文章标签
                 tags = metadata.get('tag')
                 for tag in tags:
@@ -241,11 +243,4 @@ def hookPublish(request):
         #         text = fd.read()
         #         (title, format) = file.split('.') 
         #         Article.objects.filter(title=title, desc='', content=text, user=publishUser).update
-        tFiles = commit['modified']
-        for file in tFiles:
-            # 获取文件并更新到数据库
-            with open(path+file, mode='r') as fd:
-                text = fd.read()
-                (title, format) = file.split('.') 
-                Article.objects.filter(title=title).update(content=text)
     return HttpResponse(status=200)
