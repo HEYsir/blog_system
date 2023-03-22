@@ -149,12 +149,12 @@ def md2html(fileContent):
 def hookPublish(request):
     if 'application/json' != request.META.get('CONTENT_TYPE'):
         return HttpResponse(status=404)
-    if 'git-oschina-hook' != request.META.get('HTTP_USER_AGENT'):
+    if 'git-oschina-hook' != request.META.get('User-Agent'):
         return HttpResponse(status=404)
 
-    timestamp = request.META.get('HTTP_X_GITEE_TIMESTAMP')
-    reqToken = request.META.get('HTTP_X_GITEE_TOKEN')
-    reqEvent = request.META.get('HTTP_X_GITEE_EVENT')
+    timestamp = request.META.get('X-Gitee-Timestamp')
+    reqToken = request.META.get('X-Gitee-Token')
+    reqEvent = request.META.get('X-Gitee-Event')
     if not (timestamp and reqToken and reqEvent):
         return HttpResponse(status=404)
     if 'Push Hook' != reqEvent:

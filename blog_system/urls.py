@@ -41,5 +41,5 @@ urlpatterns = [
     ##支持生产部署时的静态文件解析
     url(r'^static/(?P<path>.*)$', static.serve,
           {'document_root': settings.STATIC_ROOT}, name='static'),
-    path(settings.PUBLISH_URL, views.hookPublish),
+    path(settings.PUBLISH_URL.lstrip('/'), views.hookPublish),
 ]
