@@ -13,9 +13,31 @@
     "HOST": "",
     "PORT": ""
   },
-  "WebHooks": {
-    "secret": "",
-    "publishUrl": "",
-    "contentPath": ""
+  "WebHooks":{
+    "secret":"aaa",
+    "rootUrl":"xxxx/",
+    "deploy":{
+      "url":"deploy/",
+      "subSys":[
+        {
+          "desc":"服务部署",
+          "type":"server",  //这里的type是标识服务类型，同时是URL的子路径，如 /rootUrl/deploy/server/
+          "sender":"github",
+          "contentPath":"dddddddddddd"
+        },
+        {
+          "desc":"web部署",
+          "type":"web",
+          "sender":"github",
+          "contentPath":"cccccccccccc"
+        }
+      ]
+    },
+    "publish":{
+        "desc":"markdown文章发布",
+        "sender":"gitee",
+        "url":"pulish/",
+        "contentPath":"dddddddddddd"
+    }
   }
 }

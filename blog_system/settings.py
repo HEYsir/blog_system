@@ -86,6 +86,9 @@ DATABASES = {
         'PASSWORD': db_config['PASSWORD'],
         'HOST': db_config['HOST'],
         'PORT': db_config['PORT'],
+        "TEST":{
+            'NAME': db_config['NAME'],
+        }
     }
 }
 
@@ -142,7 +145,17 @@ AUTH_USER_MODEL = 'noinf.User'
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
+# webhooks相关配置
 WebHooks = config['WebHooks']
-PUBLISH_SEC = WebHooks['secret']
-PUBLISH_URL = WebHooks['publishUrl']
-CONTENT_PATH = WebHooks['contentPath']
+WH_RootUrl = WebHooks['rootUrl']
+WH_Secret = WebHooks['secret']
+# 博客文章发布
+PUBLISH_SEC = WH_Secret
+PUBLISH_URL = os.path.join(WH_RootUrl, WebHooks['publish']['url'])
+CONTENT_PATH = WebHooks['publish']['contentPath']
+# 服务部署
+WH_Deploys = WebHooks['deploy']
+DEPLOY_URL = os.path.join(WH_RootUrl, WH_Deploys['url'], '<str:srvtype>/')
+DEPLOY_SYS={}
+for subSys in WH_Deploys['subSys']:
+    DEPLOY_SYS[subSys['type']] = subSys

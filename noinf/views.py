@@ -7,6 +7,7 @@ import re
 from django.views.decorators.http import require_POST
 from django.conf import settings
 
+import os
 import time
 import hmac
 import hashlib
@@ -17,6 +18,8 @@ import json
 import git
 import frontmatter
 import markdown
+import requests
+import zipfile
 
 # def getmodelfield(appname, modelname, exclude):
 #     """
@@ -182,65 +185,131 @@ def hookPublish(request):
 
     # 获取报文
     postBody = request.body
-    print(postBody)
     json_result = json.loads(postBody)
-    print(json_result)
 
     path = settings.CONTENT_PATH
     git_update(path)
-    files = []
+    files = set()
     commits = json_result['commits']
     publishUser = User.objects.get(username='HEYsir')
     for commit in commits:
         newFiles = commit.get('added') or []
         mdfFiles = commit.get('modified') or []
-        tFiles = newFiles + mdfFiles
-        for file in tFiles:
-            # 获取文件并更新到数据库
-            (filename, format) = file.split('.') 
-            with open(path+file, mode='r', encoding="utf-8") as fd:
-                metadata = {}
-                content = fd.read()
-                if format in ['md', 'MD', 'Md', 'mD']:
-                    metadata, mdContent = frontmatter.parse(content)
-                    content = md2html(mdContent)
-                    # content = mdContent
-                print(metadata)
-                title = metadata.get('title') or filename
-                summery = metadata.get('summery') if metadata.get('summery') else ''
-                formdata = {
-                    'title':title, 
-                    'desc':summery, 
-                    'content':content, 
-                    'user':publishUser,
-                }
-                # 配置文章分类
-                category = metadata.get('category')  
-                if category:
-                    nav = metadata.get('nav')
-                    navObj = NavCategory.objects.filter(name=nav).first() if nav else None
-                    if navObj is None:
-                        categoryObj, isCreated = Category.objects.get_or_create(name=category)
-                    else:
-                        categoryObj, isCreated = Category.objects.get_or_create(name=category, pid=navObj)
-                    formdata['category'] = categoryObj
-                # 配置文章主题
-                topic = metadata.get('topic')
-                topicDesc = metadata.get('toptopicDescic')
-                if topic:
-                    topicObj, isCreated = Topic.objects.get_or_create(title=topic, desc=topicDesc)
-                    formdata['topic'] = topicObj
-                newArticleObj = Article.objects.update_or_create(defaults=formdata, title=title)
-                # 配置文章标签
-                tags = metadata.get('tag')
-                for tag in tags:
-                    tagObj, isCreated = Tag.objects.get_or_create(name=tag)
-                    newArticleObj.tag.add(tagObj)
-        # tFiles = commit['remove']
-        # for file in tFiles:
-        #     # 获取文件并更新到数据库
-        #     with open(path+file, mode='r') as fd:
-        #         text = fd.read()
-        #         (title, format) = file.split('.') 
-        #         Article.objects.filter(title=title, desc='', content=text, user=publishUser).update
+        files.update(newFiles, mdfFiles)
+    for file in list(files):
+        # 获取文件并更新到数据库
+        (filename, format) = file.split('.') 
+        with open(path+file, mode='r', encoding="utf-8") as fd:
+            metadata = {}
+            content = fd.read()
+            if format in ['md', 'MD', 'Md', 'mD']:
+                metadata, mdContent = frontmatter.parse(content)
+                content = md2html(mdContent)
+                # content = mdContent
+            print(metadata)
+            title = metadata.get('title') or filename
+            summery = metadata.get('summery') if metadata.get('summery') else ''
+            formdata = {
+                'title':title, 
+                'desc':summery, 
+                'content':content, 
+                'user':publishUser,
+            }
+            # 配置文章分类
+            category = metadata.get('category')  
+            if category:
+                nav = metadata.get('nav')
+                navObj = NavCategory.objects.filter(name=nav).first() if nav else None
+                if navObj is None:
+                    categoryObj, isCreated = Category.objects.get_or_create(name=category)
+                else:
+                    categoryObj, isCreated = Category.objects.get_or_create(name=category, pid=navObj)
+                formdata['category'] = categoryObj
+            # 配置文章主题
+            topic = metadata.get('topic')
+            topicDesc = metadata.get('toptopicDescic')
+            if topic:
+                topicObj, isCreated = Topic.objects.get_or_create(title=topic, desc=topicDesc)
+                formdata['topic'] = topicObj
+            articleObj, bNew = Article.objects.update_or_create(defaults=formdata, title=title)
+            # 配置文章标签
+            tags = metadata.get('tag')
+            for tag in tags:
+                tagObj, isCreated = Tag.objects.get_or_create(name=tag)
+                articleObj.tag.add(tagObj)
+            articleObj.save()
+
+    return HttpResponse(status=200)
+
+
+def __unzip(zipPath, dstPath):
+    file=zipfile.ZipFile(zipPath)
+    print('开始解压...')
+    file.extractall(dstPath)
+    file.close()
+
+
+@require_POST # 限制只能是POST方法请求
+def deployDeal(request, srvtype):
+    subSys = settings.DEPLOY_SYS.get(srvtype)
+    if not subSys:
+        return HttpResponse(f'部署服务{srvtype}暂不支持', status=404)
+    
+    if 'application/json' != request.META.get('CONTENT_TYPE'):
+        return HttpResponse('请求格式不支持',status=404)
+    if 'GitHub-Hookshot' not in  request.META.get('HTTP_USER_AGENT'):
+        return HttpResponse('无效AGENT',status=404)
+    if '405847292' != request.META.get('HTTP_X_GITHUB_HOOK_ID'):
+        return HttpResponse('无效HOOK_ID',status=404)
+    if '118770247' != request.META.get('HTTP_X_GITHUB_HOOK_INSTALLATION_TARGET_ID'):
+        return HttpResponse('无效Target-ID',status=404)
+    if 'repository' != request.META.get('HTTP_X_GITHUB_HOOK_INSTALLATION_TARGET_TYPE'):
+        return HttpResponse('无效arget-Type',status=404)
+    reqSign = request.META.get('HTTP_X_HUB_SIGNATURE_256')
+    reqEvent = request.META.get('HTTP_X_GITHUB_EVENT')
+    if not (reqSign and reqEvent):
+        return HttpResponse('无有效webhook头信息', status=404)
+    if reqEvent not in ['ping', 'push', 'release']:
+        return HttpResponse('webhook的事件类型不支持', status=404)
+    
+    postBody = request.body
+    secret_enc = settings.PUBLISH_SEC.encode('utf-8')
+    hmac_code = hmac.new(secret_enc, postBody, digestmod=hashlib.sha256).hexdigest()
+    sign = 'sha256=' + hmac_code
+    if settings.DEBUG:
+        print(sign)
+        print(reqSign)
+    else:
+        if hmac.compare_digest(sign, reqSign):
+            return HttpResponse('验签失败', status=404)
+
+    # 获取报文
+    json_result = json.loads(postBody)
+    # 判断仓库
+    repoName = json_result['repository']['name']
+    if 'blog_system' != repoName:
+        return HttpResponse('仓库名称不匹配:{repoName}', status=404)
+    # 判断是否release，当前通过事件类型判断
+    if 'release' == reqEvent:
+        if 'published' != json_result['action']:
+            return HttpResponse('非release的published行为不响应')
+        html_url = json_result['release']['html_url']
+        version = html_url.split('/')[-1]
+        downloadUrl = f'https://codeload.github.com/HEYsir/blog_system/zip/refs/tags/{version}'
+    else:
+        downloadUrl = 'https://codeload.github.com/HEYsir/blog_system/zip/refs/heads/master'
+
+    # 下载
+    main_path = subSys['contentPath']   #文件保存路径，如果不存在就会被重建
+    if not os.path.exists(main_path):   #如果路径不存在
+        os.makedirs(main_path, exist_ok=True)
+    downloadPath = os.path.join(main_path, "master.zip")
+    rsp = requests.get(downloadUrl, stream=True)
+    
+    with open(downloadPath, "wb") as zipFile:
+        for chunk in rsp.iter_content(chunk_size=512):
+            zipFile.write(chunk)
+    __unzip(downloadPath, settings.BASE_DIR)
+    
+    # 触发服务重启
     return HttpResponse(status=200)

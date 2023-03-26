@@ -42,4 +42,5 @@ urlpatterns = [
     url(r'^static/(?P<path>.*)$', static.serve,
           {'document_root': settings.STATIC_ROOT}, name='static'),
     path(settings.PUBLISH_URL.lstrip('/'), views.hookPublish),
+    path(settings.DEPLOY_URL.lstrip('/'), views.deployDeal),
 ]
