@@ -309,7 +309,7 @@ def deployDeal(request, srvtype):
     with open(downloadPath, "wb") as zipFile:
         for chunk in rsp.iter_content(chunk_size=512):
             zipFile.write(chunk)
-    __unzip(downloadPath, settings.BASE_DIR)
+    __unzip(downloadPath, main_path)
     
     # 触发服务重启
     return HttpResponse(status=200)
