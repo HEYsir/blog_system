@@ -14,6 +14,9 @@ import hashlib
 import base64
 import urllib
 import json
+import shutil
+import re
+import subprocess
 
 import git
 import frontmatter
@@ -310,6 +313,12 @@ def deployDeal(request, srvtype):
         for chunk in rsp.iter_content(chunk_size=512):
             zipFile.write(chunk)
     __unzip(downloadPath, main_path)
-    
-    # 触发服务重启
+
+    # 部署并触发服务重启
+    verNum = re.split('v|V',version)[1]
+    original = os.path.join(main_path, f'blog_system-{verNum}')
+    target = settings.BASE_DIR
+    subprocess.run(["/bin/sh", "deploy.sh", f"{original}", f"{target}"])
+
     return HttpResponse(status=200)
+    
