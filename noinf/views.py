@@ -318,7 +318,7 @@ def deployDeal(request, srvtype):
     verNum = re.split('v|V',version)[1]
     original = os.path.join(main_path, f'blog_system-{verNum}')
     target = settings.BASE_DIR
-    subprocess.run(["/bin/sh", "deploy.sh", f"{original}", f"{target}"])
+    subprocess.run(["/bin/bash", "deploy.sh", f"{original}", f"{target}"])
 
     return HttpResponse(status=200)
     
