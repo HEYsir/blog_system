@@ -8,3 +8,5 @@ noinf/migrations/
 uploads/
 collect_static/
 configure/config
+
+uwsgi.fifo
