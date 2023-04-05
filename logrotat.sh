@@ -14,3 +14,6 @@ mv $orgLog $dstLog
 echo l > $PRJDIR/uwsgi.fifo
 # touchfile="/home/logs/.touchforlogrotat"
 # touch $touchfile
+
+# 删除30天前的*.log文件
+find $LOGDIR -mtime +30 -type f -name \*.log -exec rm -f {} \; 
