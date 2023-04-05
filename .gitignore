@@ -10,3 +10,5 @@ collect_static/
 configure/config
 
 uwsgi.fifo
+
+uwsgi.pid
