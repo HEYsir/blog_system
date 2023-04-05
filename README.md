@@ -2,7 +2,7 @@
 使用python语言及django框架从零实现一个博客系统,用于替换现有的wordpress.
 
 ## 系统环境
-安装git
+1. 安装git
 apt install git
 ## 部署说明
 1. 安装虚拟环境
@@ -54,14 +54,22 @@ python manage.py runserver
 uwsgi --ini uwsgi.ini
 
 6. nginx代理配置
-location / {
-include uwsgi_params;
-#uwsgi_pass  unix:///run/uwsgi/blogsrv.sock;
-uwsgi_pass 127.0.0.1:8000;
-}
-IPC方式存在异常
-7. 创建文件夹
-7. 阿萨德
+   ```conf
+   location / {
+      include uwsgi_params;
+      #uwsgi_pass  unix:///run/uwsgi/blogsrv.sock;
+      uwsgi_pass 127.0.0.1:8000;
+   }
+   ```
+   IPC方式存在异常
+
+7. 配置日志
+
+   非root用户执行命令`echo "your password" | sudo -S bash init.sh`
+   
+   root用户执行`bash init.sh`
+
+8. 阿萨德
 
 # FQA
 
