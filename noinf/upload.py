@@ -1,10 +1,12 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from django.conf import settings
 import datetime as dt
-import uuid
 import json
 import os
+import uuid
+
+from django.conf import settings
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 @csrf_exempt
 def upload_image(request, dir_name):
@@ -23,7 +25,7 @@ def upload_image(request, dir_name):
 
 def generation_upload_dir(dir_name):
     today = dt.datetime.today()
-    dir_name = dir_name + '/%d/%d/' % (today.year, today.month)
+    dir_name = dir_name + "/%d/%d/" % (today.year, today.month)
     if not os.path.exists(settings.MEDIA_ROOT + dir_name):
         os.makedirs(settings.MEDIA_ROOT + dir_name)
     return dir_name
@@ -34,7 +36,13 @@ def image_upload(files, dir_name):
     bsuccess = False
     print(dir_name)
     # 允许上传文件类型
-    allow_suffix = ['jpg', 'png', 'jpeg', 'gif', 'bmp', ]
+    allow_suffix = [
+        "jpg",
+        "png",
+        "jpeg",
+        "gif",
+        "bmp",
+    ]
     file_suffix = files.name.split(".")[-1]
     if file_suffix not in allow_suffix:
         return {"error": 1, "message": "图片格式不正确"}
@@ -46,7 +54,7 @@ def image_upload(files, dir_name):
 
     file_name = str(uuid.uuid1()) + "." + file_suffix
     path_file = os.path.join(path, file_name)
-    with open(path_file, 'wb') as fd:
+    with open(path_file, "wb") as fd:
         fd.write(files.file.read())
         bsuccess = True
 
@@ -55,4 +63,3 @@ def image_upload(files, dir_name):
         return {"error": 0, "url": file_url}
 
     return {"error": 1, "message": "图片存储失败"}
-

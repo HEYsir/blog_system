@@ -2,7 +2,5 @@ from django.conf.urls import url
 
 from . import views
 
-app_name = 'noinf'
-urlpatterns = [
-
-]
+app_name = "noinf"
+urlpatterns = []
