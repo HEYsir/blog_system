@@ -19,7 +19,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
-from noinf.models import *
+from noinf.models import Ad, Article, NavCategory, Category, MySiteInfo, Topic, Tag, User
 
 # def getmodelfield(appname, modelname, exclude):
 #     """
@@ -98,7 +98,7 @@ def index(request):
     if beian:
         # 由于返回的是列表，这里不增加列表索引会出错
         beian_police = beian[0].beian_police
-        beian_police_no = re.sub("\D", "", beian_police)
+        beian_police_no = re.sub(r"\D", "", beian_police)
         beian_miit = beian[0].beian_miit
 
     last_article_list = Article.objects.filter(status="p").order_by("-date_publish")
@@ -106,7 +106,7 @@ def index(request):
     try:
         topNavIdx = int(topNavRq)
         last_article_list = last_article_list.filter(category__pid__id=topNavIdx)
-    except:
+    except Exception:
         print("?topNav=", topNavRq)
 
     popular_article_list = Article.objects.filter(status="p").order_by("-click_count")
@@ -139,7 +139,7 @@ def topic_article(request, topic_id):
         topic = Topic.objects.get(id=topic_id)
         topic_article = topic.article_set.all()
         article_list = getPage(request, topic_article, 10)
-    except:
+    except Exception:
         return render(request, "404.html", {"reason": "没有找到对应的文章"})
 
     return render(request, "index.html", locals())
@@ -187,9 +187,7 @@ def hookPublish(request):
     # string_to_sign_enc = bytes(string_to_sign, 'utf-8')
     string_to_sign_enc = string_to_sign.encode("utf-8")
     print(type(string_to_sign_enc))
-    hmac_code = hmac.new(
-        secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
-    ).digest()
+    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
     if settings.DEBUG:
         print(timestamp)
@@ -237,13 +235,9 @@ def hookPublish(request):
                 nav = metadata.get("nav")
                 navObj = NavCategory.objects.filter(name=nav).first() if nav else None
                 if navObj is None:
-                    categoryObj, isCreated = Category.objects.get_or_create(
-                        name=category
-                    )
+                    categoryObj, isCreated = Category.objects.get_or_create(name=category)
                 else:
-                    categoryObj, isCreated = Category.objects.get_or_create(
-                        name=category, pid=navObj
-                    )
+                    categoryObj, isCreated = Category.objects.get_or_create(name=category, pid=navObj)
                 formdata["category"] = categoryObj
             # 配置文章主题
             topic = metadata.get("topic")
@@ -251,9 +245,7 @@ def hookPublish(request):
             if topic:
                 topicObj, _ = Topic.objects.get_or_create(title=topic, desc=topicDesc)
                 formdata["topic"] = topicObj
-            articleObj, _ = Article.objects.update_or_create(
-                defaults=formdata, title=title
-            )
+            articleObj, _ = Article.objects.update_or_create(defaults=formdata, title=title)
             # 配置文章标签
             tags = metadata.get("tag")
             for tag in tags:
@@ -317,13 +309,9 @@ def deployDeal(request, srvtype):
             return HttpResponse("非release的published行为不响应")
         html_url = json_result["release"]["html_url"]
         version = html_url.split("/")[-1]
-        downloadUrl = (
-            f"https://codeload.github.com/HEYsir/blog_system/zip/refs/tags/{version}"
-        )
+        downloadUrl = f"https://codeload.github.com/HEYsir/blog_system/zip/refs/tags/{version}"
     else:
-        downloadUrl = (
-            "https://codeload.github.com/HEYsir/blog_system/zip/refs/heads/master"
-        )
+        downloadUrl = "https://codeload.github.com/HEYsir/blog_system/zip/refs/heads/master"
 
     # 下载
     main_path = subSys["contentPath"]  # 文件保存路径，如果不存在就会被重建

@@ -11,4 +11,5 @@ requests==2.28.2
 isort
 black
 flake8
+Flake8-pyproject
 pre-commit

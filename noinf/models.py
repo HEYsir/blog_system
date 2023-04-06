@@ -136,9 +136,7 @@ STATUS_CHOICES = [
 
 
 class Article(models.Model):
-    title = models.CharField(
-        max_length=50, verbose_name="文章标题", unique=True, db_index=True
-    )
+    title = models.CharField(max_length=50, verbose_name="文章标题", unique=True, db_index=True)
     desc = models.CharField(max_length=50, verbose_name="文章描述")
     content = models.TextField(verbose_name="文章内容")
     click_count = models.IntegerField(default=0, verbose_name="点击次数")
@@ -161,9 +159,7 @@ class Article(models.Model):
     tag = models.ManyToManyField(Tag, blank=True, verbose_name="标签")
 
     # 专题属性
-    topic = models.ForeignKey(
-        Topic, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="主题"
-    )
+    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="主题")
 
     class Meta:
         verbose_name = "Article"
@@ -177,20 +173,14 @@ class Article(models.Model):
 # 评论(comment)模型
 class Comment(models.Model):
     content = models.TextField(verbose_name="评论内容")
-    username = models.CharField(
-        max_length=30, blank=True, null=True, verbose_name="用户名"
-    )
+    username = models.CharField(max_length=30, blank=True, null=True, verbose_name="用户名")
     email = models.EmailField(max_length=50, blank=True, null=True, verbose_name="邮箱地址")
     url = models.URLField(max_length=100, blank=True, null=True, verbose_name="个人网页地址")
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name="发布时间")
     #
     # user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, verbose_name='用户')
-    article = models.ForeignKey(
-        Article, on_delete=models.CASCADE, blank=True, null=True, verbose_name="文章"
-    )
-    pid = models.ForeignKey(
-        "self", on_delete=models.CASCADE, blank=True, null=True, verbose_name="父级评论"
-    )
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, blank=True, null=True, verbose_name="文章")
+    pid = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True, verbose_name="父级评论")
 
     class Meta:
         verbose_name = "comment"
@@ -243,12 +233,8 @@ class Ad(models.Model):
 # 网站信息(siteInfo)模型
 class MySiteInfo(models.Model):
     title = "网站信息"
-    beian_police = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="公安备案号"
-    )
-    beian_miit = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="ICP备案号"
-    )
+    beian_police = models.CharField(max_length=50, null=True, blank=True, verbose_name="公安备案号")
+    beian_miit = models.CharField(max_length=50, null=True, blank=True, verbose_name="ICP备案号")
 
     class Meta:
         verbose_name = "网站信息"

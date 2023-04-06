@@ -1,0 +1,17 @@
+[tool.black]
+line-length = 120
+exclude = [".git", "pyenv", "__pycache__", "migrations", "*.pyc"]
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+max-line-length = 120
+# extend-ignore = "C901,E203,E501,W503,F405,E402"
+max-complexity = 25
+exclude = "*migrations*,.git,*.pyc,*__pycache__*,pyenv,.vscode,"
+per-file-ignores = [
+    "__init__.py: F401", # imported but unused
+]
+    
+    
