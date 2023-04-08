@@ -162,6 +162,7 @@ for subSys in WH_Deploys["subSys"]:
     DEPLOY_SYS[subSys["type"]] = subSys
 
 # 日志配置
+LOG_DIR = "/var/log/django"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -184,7 +185,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/debug.log"),
+            "filename": os.path.join(LOG_DIR, "debug.log"),
             "when": "D",
             "interval": 1,
             "formatter": "default",
@@ -192,19 +193,19 @@ LOGGING = {
         "request": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/request.log"),
+            "filename": os.path.join(LOG_DIR, "request.log"),
             "formatter": "default",
         },
         "root": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/root.log"),
+            "filename": os.path.join(LOG_DIR, "root.log"),
             "formatter": "default",
         },
         "db_backends": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/db_backends.log"),
+            "filename": os.path.join(LOG_DIR, "db_backends.log"),
             "formatter": "default",
         },
     },
