@@ -2,6 +2,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import os
 import re
 import subprocess
@@ -19,8 +20,18 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
-from noinf.models import Ad, Article, NavCategory, Category, MySiteInfo, Topic, Tag, User
+from noinf.models import (
+    Ad,
+    Article,
+    Category,
+    MySiteInfo,
+    NavCategory,
+    Tag,
+    Topic,
+    User,
+)
 
+log = logging.getLogger("mylogger")
 # def getmodelfield(appname, modelname, exclude):
 #     """
 #     获取model的verbose_name和name的字段

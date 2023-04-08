@@ -1,6 +1,7 @@
 import json
-from django.test import TestCase
+
 from django.conf import settings
+from django.test import TestCase
 
 
 class ServerUpdateTests(TestCase):

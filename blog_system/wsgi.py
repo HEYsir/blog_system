@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
 
 import os
 import sys
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 
 from django.core.wsgi import get_wsgi_application
 

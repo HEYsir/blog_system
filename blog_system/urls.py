@@ -13,19 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
-from django.conf.urls import url
-
-# noinf的【urls.py】设置,使输入IP就能访问首页
-from noinf import views
-from django.conf import settings
-from django.views.static import serve
-
-from noinf.upload import upload_image
 
 # 支持生产部署时的静态文件解析
 from django.views import static
+from django.views.static import serve
+
+# noinf的【urls.py】设置,使输入IP就能访问首页
+from noinf import views
+from noinf.upload import upload_image
 
 """
 urlpatterns = [

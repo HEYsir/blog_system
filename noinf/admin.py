@@ -2,7 +2,18 @@ from django.contrib import admin, messages
 from django.utils.translation import ngettext
 
 # Register your models here.
-from noinf.models import Ad, Article, NavCategory, Category, MySiteInfo, Topic, Tag, Comment, Links, User
+from noinf.models import (
+    Ad,
+    Article,
+    Category,
+    Comment,
+    Links,
+    MySiteInfo,
+    NavCategory,
+    Tag,
+    Topic,
+    User,
+)
 
 admin.site.register(User)
 admin.site.register(NavCategory)
