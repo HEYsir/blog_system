@@ -329,6 +329,7 @@ def deployDeal(request, srvtype):
     verNum = re.split("v|V", version)[1]
     original = os.path.join(main_path, f"blog_system-{verNum}")
     target = settings.BASE_DIR
-    subprocess.run(["/bin/bash", "deploy.sh", f"{original}", f"{target}"])
+    err = subprocess.run([f"{target}deploy.sh", f"{original}", f"{target}"], stderr=subprocess.PIPE).stderr
+    log.critical(err)
 
     return HttpResponse(status=200)

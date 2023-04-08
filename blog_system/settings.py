@@ -160,3 +160,79 @@ DEPLOY_URL = os.path.join(WH_RootUrl, WH_Deploys["url"], "<str:srvtype>/")
 DEPLOY_SYS = {}
 for subSys in WH_Deploys["subSys"]:
     DEPLOY_SYS[subSys["type"]] = subSys
+
+# 日志配置
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+        "default": {
+            "format": "%(asctime)s %(name)s  %(pathname)s:%(lineno)d %(module)s:%(funcName)s %(levelname)s- %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "default"},
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/debug.log"),
+            "when": "D",
+            "interval": 1,
+            "formatter": "default",
+        },
+        "request": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/request.log"),
+            "formatter": "default",
+        },
+        "root": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/root.log"),
+            "formatter": "default",
+        },
+        "db_backends": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/db_backends.log"),
+            "formatter": "default",
+        },
+    },
+    "loggers": {
+        # 应用中自定义日志记录器
+        "mylogger": {
+            "level": "DEBUG",
+            "handlers": ["console", "file"],
+            "propagate": True,
+        },
+        # "django": {
+        #     "level": "DEBUG",
+        #     "handlers": ["console", "file"],
+        #     "propagate": False,
+        # },
+        # "django.request": {
+        #     "level": "DEBUG",
+        #     "handlers": ["request"],
+        #     "propagate": False,
+        # },
+        # "django.db.backends": {
+        #     "level": "DEBUG",
+        #     "handlers": ["db_backends"],
+        #     "propagate": False,
+        # },
+    },
+    # "root": {
+    #     "level": "DEBUG",
+    #     "handlers": ["root"],
+    # },
+}
