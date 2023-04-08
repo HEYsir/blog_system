@@ -12,3 +12,5 @@ configure/config
 uwsgi.fifo
 
 uwsgi.pid
+
+theme/
