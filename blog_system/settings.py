@@ -160,9 +160,14 @@ DEPLOY_URL = os.path.join(WH_RootUrl, WH_Deploys["url"], "<str:srvtype>/")
 DEPLOY_SYS = {}
 for subSys in WH_Deploys["subSys"]:
     DEPLOY_SYS[subSys["type"]] = subSys
+# OSS
+WebHooks = config["WebHooks"]
+WH_RootUrl = WebHooks["rootUrl"]
+WH_Secret = WebHooks["secret"]
+OSS_URL = os.path.join(config["UPLOAD2OSS"]["url"], "<str:srvtype>/")
 
 # 日志配置
-LOG_DIR = "/var/log/django"
+LOG_DIR = "../logs/django"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
