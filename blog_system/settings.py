@@ -161,10 +161,8 @@ DEPLOY_SYS = {}
 for subSys in WH_Deploys["subSys"]:
     DEPLOY_SYS[subSys["type"]] = subSys
 # OSS
-WebHooks = config["WebHooks"]
-WH_RootUrl = WebHooks["rootUrl"]
-WH_Secret = WebHooks["secret"]
-OSS_URL = os.path.join(config["UPLOAD2OSS"]["url"], "<str:srvtype>/")
+OSS_CFG = config["UPLOAD2OSS"]
+OSS_URL = os.path.join("", OSS_CFG["url"])
 
 # 日志配置
 LOG_DIR = "../logs/django"
