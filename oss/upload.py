@@ -7,6 +7,14 @@ OSS = settings.OSS_CFG
 
 
 class OssOperate:
+    """
+    注意：
+        1. 在阿里云的 RAM 访问控制内，不要给RAM用户授权。
+        否则，在OSS的bucket授权策略将被RAM权限覆盖
+        2. 方案上为了避免外网的直接请求上传，造成流量费用，
+        在OSS的bucket授权策略上，需要明确指定ECS的内网IP
+    """
+
     def __init__(self):
         # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。
         # 强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
