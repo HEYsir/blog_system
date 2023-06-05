@@ -5,9 +5,8 @@ set -e
 CURDIR=$(cd "$(dirname "$0")";pwd)
 echo $CURDIR
 
-nginxconf=$CURDIR/nginx.conf
-echo $nginxconf
-cp -f $nginxconf /usr/local/openresty/nginx/conf/
+cp -f $CURDIR/nginx.conf /usr/local/openresty/nginx/conf/
+cp -f $CURDIR/config /usr/local/openresty/nginx/conf/
 
 mkdir -p /var/log/nginx/
 echo "

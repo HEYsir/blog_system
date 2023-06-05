@@ -4,12 +4,18 @@ import os
 import uuid
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.http import HttpRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from oss.upload import OssOperate
 
 
+@login_required
 @csrf_exempt
-def upload_image(request, dir_name):
+@require_POST  # 限制只能是POST方法请求
+def upload_image(request: HttpRequest, dir_name):
     ##################
     #  kindeditor图片上传返回数据格式说明：
     # {"error": 1, "message": "出错信息"}
@@ -31,7 +37,6 @@ def generation_upload_dir(dir_name):
     return dir_name
 
 
-# 图片上传
 def image_upload(files, dir_name):
     bsuccess = False
     print(dir_name)
@@ -63,3 +68,16 @@ def image_upload(files, dir_name):
         return {"error": 0, "url": file_url}
 
     return {"error": 1, "message": "图片存储失败"}
+
+
+@csrf_exempt
+@require_POST  # 限制只能是POST方法请求
+def oss_upload(request: HttpRequest):
+    file = request.FILES.get("file")
+    if file is None:
+        return JsonResponse({"code": 400, "msg": "no files for upload"})
+    filename = file.name
+
+    oss = OssOperate()
+    result = oss.upload(file, filename)
+    return JsonResponse(result)
