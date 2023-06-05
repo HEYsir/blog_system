@@ -35,5 +35,12 @@ class OssOperate:
 
         # 填写Object完整路径和字符串。Object完整路径中不能包含Bucket名称。
         # result = bucket.put_object('exampleobject.txt', 'Hello OSS', headers=headers)
-        result = self.bucket.put_object(filename, data)
-        return result
+        try:
+            self.bucket.put_object(filename, data)
+        except aliyunoss.exceptions.OssError as e:
+            rsp = {"code": e.status, "msg": f"{e.code}:{e.message}"}
+        except Exception as e:
+            rsp = {"code": 500, "msg": f"未知错误:{repr(e)}"}
+        else:
+            rsp = {"code": 200, "data": "success"}
+        return rsp

@@ -79,4 +79,5 @@ def oss_upload(request: HttpRequest):
     filename = file.name
 
     oss = OssOperate()
-    oss.upload(file, filename)
+    result = oss.upload(file, filename)
+    return JsonResponse(result)
