@@ -5,9 +5,10 @@ set -e
 CURDIR=$(cd "$(dirname "$0")";pwd)
 echo $CURDIR
 
-nginxconf=$CURDIR/nginx.conf
-echo $nginxconf
+cp -f $CURDIR/nginx.conf /usr/local/openresty/nginx/conf/
+cp -f $CURDIR/config /usr/local/openresty/nginx/conf/
 
+mkdir -p /var/log/nginx/
 echo "
 # Stop dance for OpenResty
 # =========================
@@ -29,9 +30,9 @@ Wants=network-online.target
 [Service]
 Type=forking
 PIDFile=/var/log/nginx/nginx.pid
-ExecStartPre=/usr/local/openresty/nginx/sbin/nginx -t -q -c $nginxconf -g 'daemon on; master_process on;' 
-ExecStart=/usr/local/openresty/nginx/sbin/nginx -c $nginxconf -g 'daemon on; master_process on;' 
-ExecReload=/usr/local/openresty/nginx/sbin/nginx -c $nginxconf -g 'daemon on; master_process on;' -s reload
+ExecStartPre=/usr/local/openresty/nginx/sbin/nginx -t -q -g 'daemon on; master_process on;' 
+ExecStart=/usr/local/openresty/nginx/sbin/nginx -g 'daemon on; master_process on;' 
+ExecReload=/usr/local/openresty/nginx/sbin/nginx -g 'daemon on; master_process on;' -s reload
 ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /var/log/nginx/nginx.pid
 TimeoutStopSec=5
 KillMode=mixed

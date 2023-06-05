@@ -24,7 +24,8 @@ from django.views.static import serve
 
 # noinf的【urls.py】设置,使输入IP就能访问首页
 from noinf import views
-from noinf.upload import upload_image
+from noinf.upload import upload_image, oss_upload
+
 
 """
 urlpatterns = [
@@ -49,4 +50,5 @@ urlpatterns = [
     url(r"^static/(?P<path>.*)$", static.serve, {"document_root": settings.STATIC_ROOT}, name="static"),
     path(settings.PUBLISH_URL.lstrip("/"), views.hookPublish),
     path(settings.DEPLOY_URL.lstrip("/"), views.deployDeal),
+    path(settings.OSS_URL.lstrip("/"), oss_upload),
 ]

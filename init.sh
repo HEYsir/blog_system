@@ -1,10 +1,9 @@
 #! /bin/bash
 set -x -e
 PRJDIR=$(cd "$(dirname "$0")";pwd)
-
 # nginx/openresty系统服务/usr/lib/systemd/system/openresty.service修改
 # 指定配置文件
-bash $PRJDIR/server_openresty.sh
+bash $PRJDIR/configure/server_openresty.sh
 
 # 日志切片
 # 这个实际是生成的临时配置，服务重启后丢失
