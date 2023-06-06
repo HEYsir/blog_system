@@ -41,8 +41,7 @@
     }
   },
   "UPLOAD2OSS": {
-    "outerUrl": "xxxx/",
-    "innerUrl": "xxxx/",
+    "url": "",
     "keyId": "",
     "keySecret": "",
     "endpoint": "",
