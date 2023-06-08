@@ -3,8 +3,6 @@ __pycache__/
 .vscode/
 pyenv/
 
-noinf/migrations/
-
 uploads/
 collect_static/
 configure/config
