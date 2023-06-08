@@ -137,7 +137,7 @@ STATUS_CHOICES = [
 
 class Article(models.Model):
     title = models.CharField(max_length=50, verbose_name="文章标题", unique=True, db_index=True)
-    desc = models.CharField(max_length=50, verbose_name="文章描述")
+    desc = models.CharField(max_length=1000, verbose_name="文章描述")
     content = models.TextField(verbose_name="文章内容")
     click_count = models.IntegerField(default=0, verbose_name="点击次数")
     likes_count = models.IntegerField(default=0, verbose_name="点赞次数")
